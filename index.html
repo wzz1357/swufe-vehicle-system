@@ -272,9 +272,11 @@
             <div class="form-group">
                 <label>角色</label>
                 <select id="loginRole">
+                    <option value="superadmin">超级管理员</option>
                     <option value="admin">管理员</option>
                     <option value="user">在校师生</option>
-                    <option value="visitor">单位预约人</option>
+                    <option value="user">光华住户</option>
+                    <option value="visitor">访客</option>
                 </select>
             </div>
 
@@ -628,6 +630,40 @@
         </div>
     </div>
 
+     <!-- ========== SSMS超级管理员页面 ========== -->
+    <div class="login-page hidden" id="ssmsPage">
+        <div class="login-box" style="width: 900px; max-width: 95vw;">
+            <div class="login-title">超级管理员控制台 <span style="display:inline-block;background:#e74c3c;color:white;padding:2px 10px;border-radius:4px;font-size:12px;margin-left:8px;">SSMS</span></div>
+            <div class="login-subtitle">审核管理员注册申请</div>
+            <div id="ssmsTableArea" style="margin-top: 20px;">
+                <table class="data-table" id="ssmsTable">
+                    <thead><tr><th>账号</th><th>姓名</th><th>手机号</th><th>用户类型</th><th>注册时间</th><th>状态</th><th>操作</th></tr></thead>
+                    <tbody id="ssmsTableBody"></tbody>
+                </table>
+                <p id="ssmsEmpty" style="text-align: center; color: #999; padding: 30px; display: none;">暂无待审批的管理员申请</p>
+            </div>
+            <div class="back-link" style="margin-top: 30px;"><a onclick="backToMain()">← 返回主页</a></div>
+            <div id="ssmsResult" class="result"></div>
+        </div>
+    </div>
+
+    <!-- ========== 管理员申诉审核页面 ========== -->
+    <div class="login-page hidden" id="adminAppealPage">
+        <div class="login-box" style="width: 900px; max-width: 95vw;">
+            <div class="login-title">申诉审核控制台 <span style="display:inline-block;background:#e74c3c;color:white;padding:2px 10px;border-radius:4px;font-size:12px;margin-left:8px;">ADMIN</span></div>
+            <div class="login-subtitle">审核用户提交的违规申诉</div>
+            <div id="adminAppealTableArea" style="margin-top: 20px;">
+                <table class="data-table" id="adminAppealTable">
+                    <thead><tr><th>申诉人</th><th>车牌号</th><th>车辆类型</th><th>违规原因</th><th>违规日期</th><th>申诉理由</th><th>提交时间</th><th>操作</th></tr></thead>
+                    <tbody id="adminAppealTableBody"></tbody>
+                </table>
+                <p id="adminAppealEmpty" style="text-align: center; color: #999; padding: 30px; display: none;">暂无待审核的申诉</p>
+            </div>
+            <div class="back-link" style="margin-top: 30px;"><a onclick="backToMain()">← 返回主页</a></div>
+            <div id="adminAppealResult" class="result"></div>
+        </div>
+    </div>
+
     <!-- 数据库查看按钮 -->
     <button class="db-toggle" onclick="toggleDbPanel()">📊 查看数据库</button>
     <div class="db-panel hidden" id="dbPanel">
@@ -643,9 +679,10 @@
             if (!localStorage.getItem(DB_KEY)) {
                 const initialData = {
                     users: [
-                        { account: 'A001', password: 'admin123', role: 'admin', name: '系统管理员', phone: '13800000001', userType: 1, status: 'active' },
-                        { account: 'U001', password: 'user123', role: 'user', name: '张三', phone: '13800000002', userType: 2, status: 'active' },
-                        { account: 'U002', password: 'user123', role: 'visitor', name: '李四', phone: '13800000003', userType: 3, status: 'active' }
+                        { account: 'S001', password: 'ssms123', role: 'superadmin', name: '超级管理员', phone: '13800000000', userType: 1, status: 'active' },
+                        { account: 'A001', password: 'admin123', role: 'admin', name: '系统管理员', phone: '13800000001', userType: 2, status: 'active' },
+                        { account: 'U001', password: 'user123', role: 'user', name: '张三', phone: '13800000002', userType: 3, status: 'active' },
+                        { account: 'U002', password: 'user123', role: 'visitor', name: '李四', phone: '13800000003', userType: 4, status: 'active' }
                     ],
                     vehicles: [],
                     reservations: [],
@@ -773,7 +810,7 @@
             document.getElementById('mainPage').style.display = 'block';
         }
 
-        function hideAll() {
+       function hideAll() {
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('registerPage').classList.add('hidden');
             document.getElementById('forgotPage').classList.add('hidden');
@@ -786,6 +823,8 @@
             document.getElementById('violationAppealPage').classList.add('hidden');
             document.getElementById('appealQueryPage').classList.add('hidden');
             document.getElementById('vehicleQueryPage').classList.add('hidden');
+            document.getElementById('ssmsPage').classList.add('hidden');
+            document.getElementById('adminAppealPage').classList.add('hidden');
         }
 
         // ==================== 手机号验证工具 ====================
@@ -827,26 +866,21 @@
             var resultDiv = document.getElementById('regResult');
             var btn = document.getElementById('regBtn');
 
-            // 前端验证
             if (!realName || !phone || !password) {
                 resultDiv.textContent = '❌ 请填写完整信息';
                 resultDiv.className = 'result error';
                 return;
             }
-
             if (password !== confirm) {
                 resultDiv.textContent = '❌ 两次密码不一致';
                 resultDiv.className = 'result error';
                 return;
             }
-
             if (password.length < 6) {
                 resultDiv.textContent = '❌ 密码长度至少6位';
                 resultDiv.className = 'result error';
                 return;
             }
-
-            // 手机号格式验证（使用修复后的正则）
             if (!isValidPhone(phone)) {
                 resultDiv.textContent = '❌ 请输入正确的11位手机号';
                 resultDiv.className = 'result error';
@@ -856,11 +890,8 @@
             btn.disabled = true;
             btn.textContent = '注册中...';
 
-            // 模拟异步操作
             setTimeout(function() {
                 var db = getDB();
-
-                // 检查手机号是否已注册
                 if (db.users.some(function(u) { return u.phone === phone; })) {
                     resultDiv.textContent = '❌ 该手机号已注册';
                     resultDiv.className = 'result error';
@@ -869,12 +900,11 @@
                     return;
                 }
 
-                // 根据用户类型映射角色
-                var roleMap = { 1: 'admin', 2: 'user', 3: 'user', 4: 'visitor' };
+                var roleMap = { 1: 'superadmin', 2: 'admin', 3: 'user', 4: 'user', 5: 'visitor' };
                 var role = roleMap[userType] || 'visitor';
                 var account = generateAccount(role);
-
-                // 创建新用户并写入数据库
+                var needApproval = (userType === 1 || userType === 2);
+                
                 var newUser = {
                     account: account,
                     password: password,
@@ -882,22 +912,20 @@
                     name: realName,
                     phone: phone,
                     userType: userType,
-                    status: 'active',
+                    status: needApproval ? 'pending' : 'active',
                     registerTime: new Date().toISOString()
                 };
 
                 db.users.push(newUser);
                 saveDB(db);
 
-                // 显示成功弹窗
                 document.getElementById('successAccount').textContent = account;
-                var msg = userType === 1 
+                var msg = needApproval 
                     ? '管理员账号已创建，请等待超级管理员审批后登录' 
                     : '账号已自动开通，请牢记您的账号，现在可以使用该账号登录';
                 document.getElementById('successMessage').textContent = msg;
                 document.getElementById('successModal').classList.remove('hidden');
 
-                // 清空表单
                 document.getElementById('regName').value = '';
                 document.getElementById('regPhone').value = '';
                 document.getElementById('regPassword').value = '';
@@ -934,19 +962,34 @@
                     return;
                 }
 
+                if (user.status === 'pending') {
+                    resultDiv.textContent = '❌ 账号正在审核中，请等待超级管理员审批';
+                    resultDiv.className = 'result error';
+                    return;
+                }
+                if (user.status === 'rejected') {
+                    resultDiv.textContent = '❌ 账号申请已被驳回';
+                    resultDiv.className = 'result error';
+                    return;
+                }
                 if (user.status !== 'active') {
                     resultDiv.textContent = '❌ 账号未激活或已被禁用';
                     resultDiv.className = 'result error';
                     return;
                 }
 
+                if (role === 'superadmin' && user.role !== 'superadmin') {
+                    resultDiv.textContent = '❌ 该账号不是超级管理员账号';
+                    resultDiv.className = 'result error';
+                    return;
+                }
                 if (role === 'admin' && user.role !== 'admin') {
                     resultDiv.textContent = '❌ 该账号不是管理员账号';
                     resultDiv.className = 'result error';
                     return;
                 }
                 if (role === 'user' && user.role !== 'user') {
-                    resultDiv.textContent = '❌ 该账号不是在校师生账号';
+                    resultDiv.textContent = '❌ 该账号不是在校师生或光华住户账号';
                     resultDiv.className = 'result error';
                     return;
                 }
@@ -962,8 +1005,20 @@
                 document.getElementById('mainPage').style.display = 'block';
                 document.getElementById('userName').textContent = user.name;
                 document.getElementById('userRole').textContent = 
+                    user.role === 'superadmin' ? '超级管理员' :
                     user.role === 'admin' ? '管理员' : 
-                    user.role === 'user' ? '在校师生' : '单位预约人';
+                    user.role === 'user' ? '在校师生' : '访客';
+                
+                if (user.role === 'superadmin') {
+                    document.getElementById('ssmsBtn').style.display = 'inline-block';
+                    document.getElementById('adminAppealBtn').style.display = 'inline-block';
+                } else if (user.role === 'admin') {
+                    document.getElementById('ssmsBtn').style.display = 'none';
+                    document.getElementById('adminAppealBtn').style.display = 'inline-block';
+                } else {
+                    document.getElementById('ssmsBtn').style.display = 'none';
+                    document.getElementById('adminAppealBtn').style.display = 'none';
+                }
 
                 resultDiv.textContent = '';
             }, 500);
@@ -1414,6 +1469,95 @@
                 ];
                 saveDB(db);
             }
+        }
+
+
+        function showSSMS() {
+            hideAll();
+            document.getElementById('ssmsPage').classList.remove('hidden');
+            loadSSMSPendingUsers();
+        }
+
+        function loadSSMSPendingUsers() {
+            var db = getDB();
+            var pendingUsers = db.users.filter(function(u) { return u.status === 'pending'; });
+            var tableBody = document.getElementById('ssmsTableBody');
+            var emptyMsg = document.getElementById('ssmsEmpty');
+            var resultDiv = document.getElementById('ssmsResult');
+            tableBody.innerHTML = '';
+            if (pendingUsers.length === 0) {
+                emptyMsg.style.display = 'block';
+                document.getElementById('ssmsTable').style.display = 'none';
+                resultDiv.textContent = '暂无待审批的管理员申请';
+                resultDiv.className = 'result success';
+                return;
+            }
+            emptyMsg.style.display = 'none';
+            document.getElementById('ssmsTable').style.display = 'table';
+            pendingUsers.forEach(function(user) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + user.account + '</td><td>' + user.name + '</td><td>' + user.phone + '</td><td>' + (user.role === 'superadmin' ? '超级管理员' : '管理员') + '</td><td>' + (user.registerTime ? user.registerTime.slice(0, 10) : '-') + '</td><td><span style="color:#f39c12;font-weight:bold;">审核中</span></td><td><button class="btn-small btn-approve" onclick="ssmsApprove(\'' + user.account + '\')">通过</button><button class="btn-small btn-reject" onclick="ssmsReject(\'' + user.account + '\')">驳回</button></td>';
+                tableBody.appendChild(tr);
+            });
+            resultDiv.textContent = '✓ 共有 ' + pendingUsers.length + ' 条待审批申请';
+            resultDiv.className = 'result success';
+        }
+
+        function ssmsApprove(account) {
+            var db = getDB();
+            var user = db.users.find(function(u) { return u.account === account; });
+            if (user) { user.status = 'active'; saveDB(db); alert('✓ 已通过 ' + user.name + ' (' + account + ') 的申请'); loadSSMSPendingUsers(); }
+        }
+
+        function ssmsReject(account) {
+            var db = getDB();
+            var user = db.users.find(function(u) { return u.account === account; });
+            if (user) { user.status = 'rejected'; saveDB(db); alert('✓ 已驳回 ' + user.name + ' (' + account + ') 的申请'); loadSSMSPendingUsers(); }
+        }
+
+        // ==================== 管理员申诉审核功能 ====================
+        function showAdminAppeal() {
+            hideAll();
+            document.getElementById('adminAppealPage').classList.remove('hidden');
+            loadAdminPendingAppeals();
+        }
+
+        function loadAdminPendingAppeals() {
+            var db = getDB();
+            var pendingAppeals = db.appeals.filter(function(a) { return a.status === 'pending'; });
+            var tableBody = document.getElementById('adminAppealTableBody');
+            var emptyMsg = document.getElementById('adminAppealEmpty');
+            var resultDiv = document.getElementById('adminAppealResult');
+            tableBody.innerHTML = '';
+            if (pendingAppeals.length === 0) {
+                emptyMsg.style.display = 'block';
+                document.getElementById('adminAppealTable').style.display = 'none';
+                resultDiv.textContent = '暂无待审核的申诉';
+                resultDiv.className = 'result success';
+                return;
+            }
+            emptyMsg.style.display = 'none';
+            document.getElementById('adminAppealTable').style.display = 'table';
+            var typeMap = { car: '小汽车', motor: '摩托车', truck: '货车', other: '其他' };
+            pendingAppeals.forEach(function(appeal) {
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + appeal.submitter + '</td><td>' + appeal.plate + '</td><td>' + (typeMap[appeal.vehicleType] || appeal.vehicleType) + '</td><td>' + appeal.reason + '</td><td>' + appeal.date + '</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;" title="' + appeal.appealReason + '">' + appeal.appealReason + '</td><td>' + (appeal.submitTime ? appeal.submitTime.slice(0, 10) : '-') + '</td><td><button class="btn-small btn-approve" onclick="adminApprove(' + appeal.id + ')">通过</button><button class="btn-small btn-reject" onclick="adminReject(' + appeal.id + ')">驳回</button></td>';
+                tableBody.appendChild(tr);
+            });
+            resultDiv.textContent = '✓ 共有 ' + pendingAppeals.length + ' 条待审核申诉';
+            resultDiv.className = 'result success';
+        }
+
+        function adminApprove(id) {
+            var db = getDB();
+            var appeal = db.appeals.find(function(a) { return a.id === id; });
+            if (appeal) { appeal.status = 'approved'; appeal.passed = true; appeal.admin = currentUser ? currentUser.name : '管理员'; saveDB(db); alert('✓ 已通过 ' + appeal.submitter + ' 的申诉'); loadAdminPendingAppeals(); }
+        }
+
+        function adminReject(id) {
+            var db = getDB();
+            var appeal = db.appeals.find(function(a) { return a.id === id; });
+            if (appeal) { appeal.status = 'rejected'; appeal.passed = false; appeal.admin = currentUser ? currentUser.name : '管理员'; saveDB(db); alert('✓ 已驳回 ' + appeal.submitter + ' 的申诉'); loadAdminPendingAppeals(); }
         }
 
         function logout() {
