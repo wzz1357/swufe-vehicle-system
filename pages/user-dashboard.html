@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWUFE 车辆管理系统 - 用户中心</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SWUFE 车辆管理</h2>
+                <p id="userRole">用户</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-page="home">
+                        <span class="icon">🏠</span>
+                        <span>首页</span>
+                    </li>
+                    <li data-page="my-vehicles">
+                        <span class="icon">🚗</span>
+                        <span>我的车辆</span>
+                    </li>
+                    <li data-page="my-reservations">
+                        <span class="icon">📅</span>
+                        <span>我的预约</span>
+                    </li>
+                    <li data-page="violations">
+                        <span class="icon">⚠️</span>
+                        <span>违规记录</span>
+                    </li>
+                    <li data-page="my-appeals">
+                        <span class="icon">📝</span>
+                        <span>我的申诉</span>
+                    </li>
+                    <li data-page="score-query">
+                        <span class="icon">📊</span>
+                        <span>积分查询</span>
+                    </li>
+                    <li data-page="study-recovery">
+                        <span class="icon">📖</span>
+                        <span>学习恢复</span>
+                    </li>
+                    <li data-page="profile">
+                        <span class="icon">👤</span>
+                        <span>个人中心</span>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="logout-btn">
+                    <span class="icon">🚪</span>
+                    <span>退出登录</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="top-bar">
+                <h1 id="pageTitle">首页</h1>
+                <div class="user-info">
+                    <span id="userName">用户</span>
+                    <span id="currentTime"></span>
+                </div>
+            </header>
+
+            <!-- 首页内容 -->
+            <div id="home" class="page-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">我的车辆</div>
+                        <div class="stat-value" id="statVehicleCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">本年违规</div>
+                        <div class="stat-value" id="statViolationCount">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">累计扣分</div>
+                        <div class="stat-value" id="statTotalScore">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">待处理申诉</div>
+                        <div class="stat-value" id="statPendingAppeal">0</div>
+                    </div>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="showPage('vehicle-register')">
+                        <div class="feature-icon">🚗</div>
+                        <h3>车辆登记</h3>
+                        <p>登记新车辆获取校园通行权限</p>
+                    </div>
+                    <div class="feature-card" onclick="showPage('reservation')">
+                        <div class="feature-icon">📅</div>
+                        <h3>车辆预约</h3>
+                        <p>预约临时车辆进入校园</p>
+                    </div>
+                    <div class="feature-card" onclick="showPage('score-query')">
+                        <div class="feature-icon">📊</div>
+                        <h3>积分查询</h3>
+                        <p>查看车辆积分和违规记录</p>
+                    </div>
+                    <div class="feature-card" onclick="showPage('violation-rules')">
+                        <div class="feature-icon">📋</div>
+                        <h3>违规细则</h3>
+                        <p>了解校园车辆管理规定</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 车辆登记 -->
+            <div id="vehicle-register" class="page-content">
+                <div class="form-section">
+                    <h3>车辆登记</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>车牌号</label>
+                                <input type="text" id="plateNum" placeholder="请输入车牌号">
+                                
+                        </div>
+                        <div class="form-group">
+                            <label>车辆类型</label>
+                            <select id="regCarType">
+                                <option value="">请选择</option>
+                                <option value="A">A类 - 注册车辆（师生/租户）</option>
+                                <option value="B">B类 - 预约车辆（访客）</option>
+                                <option value="C">C类 - 摩托车（师生/租户）</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>品牌型号</label>
+                            <input type="text" id="regBrand" placeholder="如：丰田凯美瑞">
+                        </div>
+                        <div class="form-group">
+                            <label>车身颜色</label>
+                            <input type="text" id="regColor" placeholder="如：黑色">
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="registerVehicle()">提交登记</button>
+                        <button class="btn btn-secondary" onclick="showPage('home')">返回</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 车辆预约 -->
+            <div id="reservation" class="page-content">
+                <div class="form-section">
+                    <h3>车辆预约</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>车牌号</label>
+                            <input type="text" id="reservePlateNum" placeholder="请输入B类车牌号">
+                        </div>
+                        <div class="form-group">
+                            <label>预约类型</label>
+                            <select id="reserveType">
+                                <option value="B">B类 - 临时预约</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>开始时间</label>
+                            <input type="datetime-local" id="reserveStart">
+                        </div>
+                        <div class="form-group">
+                            <label>结束时间</label>
+                            <input type="datetime-local" id="reserveEnd">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>预约事由</label>
+                        <input type="text" id="reservePurpose" placeholder="请输入预约事由">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>联系人姓名</label>
+                            <input type="text" id="reserveContactName" placeholder="选填">
+                        </div>
+                        <div class="form-group">
+                            <label>联系人电话</label>
+                            <input type="tel" id="reserveContactPhone" placeholder="选填">
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="submitReservation()">提交预约</button>
+                        <button class="btn btn-secondary" onclick="showPage('home')">返回</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的车辆 -->
+            <div id="my-vehicles" class="page-content">
+                <div class="form-section">
+                    <h3>我的车辆</h3>
+                    <div id="myVehicleList" class="record-list"></div>
+                </div>
+            </div>
+
+            <!-- 我的预约 -->
+            <div id="my-reservations" class="page-content">
+                <div class="form-section">
+                    <h3>我的预约</h3>
+                    <div id="myReservationList" class="record-list"></div>
+                </div>
+            </div>
+
+            <!-- 违规记录 -->
+            <div id="violations" class="page-content">
+    <div class="form-section">
+        <h3>违规记录</h3>
+        <div id="myViolationList"></div>  <!-- 必须有这个ID -->
+    </div>
+</div>
+
+            <!-- 我的申诉 -->
+            <div id="my-appeals" class="page-content">
+                <div class="form-section">
+                    <h3>我的申诉</h3>
+                    <div id="myAppealList" class="record-list"></div>
+                </div>
+            </div>
+
+            <!-- 积分查询 -->
+            <div id="score-query" class="page-content">
+                <div class="form-section">
+                    <h3>积分查询</h3>
+                    <div id="scoreQueryResult"></div>
+                </div>
+            </div>
+
+            <!-- 学习恢复 -->
+            <div id="study-recovery" class="page-content">
+                <div class="form-section">
+                    <h3>学习恢复</h3>
+                    <p>当您的A类车辆累计扣分达到12分时，可通过学习恢复12分。</p>
+                    <p>每个周期（自然年）最多可申请2次学习恢复。</p>
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>选择车辆</label>
+                        <select id="studyRecoveryPlateNum"></select>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="applyStudyRecovery()">申请学习恢复</button>
+                    </div>
+                    <div id="studyRecoveryResult" style="margin-top: 20px;"></div>
+                </div>
+            </div>
+
+            <!-- 个人中心 -->
+            <div id="profile" class="page-content">
+                <div class="form-section">
+                    <h3>个人中心</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>用户ID</label>
+                            <input type="text" id="profileUserId" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>真实姓名</label>
+                            <input type="text" id="profileUserName" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>手机号</label>
+                            <input type="text" id="profilePhone" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>身份类型</label>
+                            <input type="text" id="profileType" readonly>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="showChangePassword()">修改密码</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 违规细则 -->
+            <div id="violation-rules" class="page-content">
+                <div class="form-section">
+                    <h3>西南财经大学校园内机动车违规处理实施细则</h3>
+                    <div style="line-height: 2; color: #444;">
+                        <h4 style="color: #667eea; margin: 16px 0 8px;">一、A类车辆（注册车辆）</h4>
+                        <p><strong>1. 积分制度：</strong>每辆A类车辆初始积分为12分，按自然年计算。</p>
+                        <p><strong>2. 扣分标准：</strong></p>
+                        <ul style="margin-left: 24px;">
+                            <li>一般违规：扣1分（如未按规定停车）</li>
+                            <li>较重违规：扣3分（如超速20%以下）</li>
+                            <li>严重违规：扣6分（如超速20%-50%）</li>
+                            <li>危险违规：扣12分（如超速50%以上、逆行等）</li>
+                        </ul>
+                        <p><strong>3. 处罚措施：</strong></p>
+                        <ul style="margin-left: 24px;">
+                            <li>累计扣12分：暂停注册资格15天</li>
+                            <li>累计扣24分：暂停注册资格30天</li>
+                            <li>累计扣36分：暂停注册资格365天</li>
+                            <li>一次性扣12分（危险超速）：暂停注册资格60天</li>
+                        </ul>
+                        <p><strong>4. 学习恢复：</strong>暂停期间可通过学习恢复积分，每次恢复12分，一个周期最多2次。</p>
+                        
+                        <h4 style="color: #667eea; margin: 16px 0 8px;">二、B类车辆（预约车辆）</h4>
+                        <p><strong>1. 累计扣分≥6分：</strong>加入黑名单，暂停预约30天</p>
+                        <p><strong>2. 累计扣分≥12分：</strong>暂停预约60天</p>
+                        <p><strong>3. 累计扣分≥24分：</strong>暂停预约365天，并通报所在单位</p>
+                        <p><strong>4. 用户维度：</strong>用户名下所有B类车辆本年累计扣分超过24分，禁止该用户预约</p>
+                        
+                        <h4 style="color: #667eea; margin: 16px 0 8px;">三、C类车辆（摩托车）</h4>
+                        <p>累计扣分超过12分，暂停入校资格。</p>
+                        
+                        <h4 style="color: #667eea; margin: 16px 0 8px;">四、黑名单制度</h4>
+                        <p>以下行为永久禁止入校：</p>
+                        <ul style="margin-left: 24px;">
+                            <li>酒驾/醉驾</li>
+                            <li>肇事逃逸</li>
+                            <li>伪造证件</li>
+                            <li>暴力抗法</li>
+                        </ul>
+                        
+                        <h4 style="color: #667eea; margin: 16px 0 8px;">五、申诉机制</h4>
+                        <p>对违规处罚有异议的，可在7日内提交申诉。申诉通过后恢复积分并解除禁止状态。</p>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="showPage('home')">返回首页</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 修改密码弹窗 -->
+    <div id="changePasswordModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>修改密码</h3>
+                <span class="modal-close" onclick="closeChangePassword()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>旧密码</label>
+                    <input type="password" id="oldPassword" placeholder="请输入旧密码">
+                </div>
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" id="newPassword" placeholder="至少6位字符">
+                </div>
+                <div class="form-group">
+                    <label>确认新密码</label>
+                    <input type="password" id="confirmNewPassword" placeholder="再次输入新密码">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeChangePassword()">取消</button>
+                <button class="btn btn-primary" onclick="submitChangePassword()">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth-utils.js"></script>
+    <script src="../js/user-dashboard.js"></script>
+</body>
+</html>

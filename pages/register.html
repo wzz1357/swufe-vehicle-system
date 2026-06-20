@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWUFE 车辆管理系统 - 注册</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box register-box">
+            <div class="login-header">
+                <h1>用户注册</h1>
+                <p>西南财经大学校园车辆管理系统</p>
+            </div>
+
+            <form id="registerForm" class="login-form">
+                <div class="form-group">
+                    <label for="userType">身份类型</label>
+                    <select id="userType" name="userType" required>
+                        <option value="">请选择身份</option>
+                        <option value="student">学生</option>
+                        <option value="teacher">教职工</option>
+                        <option value="tenant">光华租户</option>
+                        <option value="partner">合作单位</option>
+                        <option value="visitor">访客/单位预约人</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="realName">真实姓名</label>
+                    <input type="text" id="realName" name="realName" placeholder="请输入真实姓名" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">手机号码</label>
+                    <input type="tel" id="phone" name="phone" placeholder="请输入11位手机号" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">密码</label>
+                    <input type="password" id="password" name="password" placeholder="至少6位字符" minlength="6" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">确认密码</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="再次输入密码" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="idCard">身份证号（可选）</label>
+                    <input type="text" id="idCard" name="idCard" placeholder="用于身份核验">
+                </div>
+
+                <div class="form-group">
+                    <label for="workId">工号/学号（可选）</label>
+                    <input type="text" id="workId" name="workId" placeholder="教职工填写工号，学生填写学号">
+                </div>
+
+                <div class="form-group">
+                    <label for="dept">部门/学院（可选）</label>
+                    <input type="text" id="dept" name="dept" placeholder="所属部门或学院">
+                </div>
+
+                <button type="submit" class="btn-login">注 册</button>
+
+                <div class="form-footer">
+                    <p>已有账号？<a href="../index.html" class="register-link">立即登录</a></p>
+                </div>
+
+                <div class="privacy-agreement">
+                    <label class="privacy-checkbox">
+                        <input type="checkbox" id="agreePrivacy" required>
+                        <span>同意</span>
+                    </label>
+                    <a href="#" class="privacy-link" onclick="showPrivacyPolicy()">《隐私政策》</a>
+                    <span>和</span>
+                    <a href="#" class="privacy-link" onclick="showViolationRules()">《西南财经大学校园内机动车违规处理实施细则》</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 隐私政策弹窗 -->
+    <div id="privacyModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>隐私政策</h2>
+                <span class="close" onclick="closePrivacyPolicy()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>1. 本系统收集的个人信息仅用于校园车辆管理目的。</p>
+                <p>2. 您的个人信息将受到严格保护，不会泄露给第三方。</p>
+                <p>3. 系统会记录车辆进出校园的时间、车牌号等信息用于安全管理。</p>
+                <p>4. 违规记录将被保存用于校园交通秩序管理。</p>
+                <p>5. 您有权查看、修改自己的个人信息。</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 违规处理细则弹窗 -->
+    <div id="rulesModal" class="modal">
+        <div class="modal-content rules-modal">
+            <div class="modal-header">
+                <h2>西南财经大学校园内机动车违规处理实施细则</h2>
+                <span class="close" onclick="closeViolationRules()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h3>一、A类车辆（注册车辆）</h3>
+                <p><strong>1. 积分制度：</strong>每辆A类车辆初始积分为12分，按自然年计算。</p>
+                <p><strong>2. 扣分标准：</strong></p>
+                <ul>
+                    <li>一般违规：扣1分（如未按规定停车）</li>
+                    <li>较重违规：扣3分（如超速20%以下）</li>
+                    <li>严重违规：扣6分（如超速20%-50%）</li>
+                    <li>危险违规：扣12分（如超速50%以上、逆行等）</li>
+                </ul>
+                <p><strong>3. 处罚措施：</strong></p>
+                <ul>
+                    <li>累计扣12分：暂停注册资格15天</li>
+                    <li>累计扣24分：暂停注册资格30天</li>
+                    <li>累计扣36分：暂停注册资格365天</li>
+                    <li>一次性扣12分（危险超速）：暂停注册资格60天</li>
+                </ul>
+                <p><strong>4. 学习恢复：</strong>暂停期间可通过学习恢复积分，每次恢复12分，一个周期最多2次。</p>
+                
+                <h3>二、B类车辆（预约车辆）</h3>
+                <p><strong>1. 累计扣分≥6分：</strong>加入黑名单，暂停预约30天</p>
+                <p><strong>2. 累计扣分≥12分：</strong>暂停预约60天</p>
+                <p><strong>3. 累计扣分≥24分：</strong>暂停预约365天，并通报所在单位</p>
+                <p><strong>4. 用户维度：</strong>用户名下所有B类车辆本年累计扣分超过24分，禁止该用户预约</p>
+                
+                <h3>三、C类车辆（摩托车）</h3>
+                <p>累计扣分超过12分，暂停入校资格。</p>
+                
+                <h3>四、黑名单制度</h3>
+                <p>以下行为永久禁止入校：</p>
+                <ul>
+                    <li>酒驾/醉驾</li>
+                    <li>肇事逃逸</li>
+                    <li>伪造证件</li>
+                    <li>暴力抗法</li>
+                </ul>
+                
+                <h3>五、申诉机制</h3>
+                <p>对违规处罚有异议的，可在7日内提交申诉。申诉通过后恢复积分并解除禁止状态。</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth-utils.js"></script>
+    <script src="../js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWUFE 车辆管理系统 - 管理后台</title>
+    <link rel="stylesheet" href="../css/dashboard.css">
+<base target="_blank">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- 左侧导航栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>SWUFE 车辆管理</h2>
+                <p id="userRole">管理员</p>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-page="home">
+                        <span class="icon">🏠</span>
+                        <span>首页</span>
+                    </li>
+                    <li data-page="vehicle-manage">
+                        <span class="icon">🚗</span>
+                        <span>车辆管理</span>
+                    </li>
+                    <li data-page="violation-manage">
+                        <span class="icon">⚠️</span>
+                        <span>违规管理</span>
+                    </li>
+                    <li data-page="reservation-manage">
+                        <span class="icon">📅</span>
+                        <span>预约管理</span>
+                    </li>
+                    <li data-page="blacklist-manage">
+                        <span class="icon">🚫</span>
+                        <span>黑名单</span>
+                    </li>
+                    <li data-page="appeal-manage">
+                        <span class="icon">📝</span>
+                        <span>申诉审核</span>
+                    </li>
+                    <li data-page="score-manage">
+                        <span class="icon">📊</span>
+                        <span>积分管理</span>
+                    </li>
+                    <li data-page="user-manage">
+                        <span class="icon">👥</span>
+                        <span>用户管理</span>
+                    </li>
+                    <li data-page="admin-apply" id="navAdminApply" class="hidden">
+                        <span class="icon">🔐</span>
+                        <span>管理员申请</span>
+                    </li>
+                    <li data-page="profile">
+                        <span class="icon">👤</span>
+                        <span>个人中心</span>
+                    </li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <button onclick="logout()" class="logout-btn">
+                    <span class="icon">🚪</span>
+                    <span>退出登录</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部栏 -->
+            <header class="top-bar">
+                <h1 id="pageTitle">首页</h1>
+                <div class="user-info">
+                    <span id="userName">管理员</span>
+                    <span id="currentTime"></span>
+                </div>
+            </header>
+
+            <!-- 首页内容 -->
+            <div id="home" class="page-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">总车辆数</div>
+                        <div class="stat-value" id="adminStatVehicles">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">今日违规</div>
+                        <div class="stat-value" id="adminStatTodayViolations">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">待审核预约</div>
+                        <div class="stat-value" id="adminStatPendingReserves">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">黑名单车辆</div>
+                        <div class="stat-value" id="adminStatBlacklist">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">待处理申诉</div>
+                        <div class="stat-value" id="adminStatPendingAppeals">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">总用户数</div>
+                        <div class="stat-value" id="adminStatUsers">0</div>
+                    </div>
+                </div>
+
+                <div class="feature-grid">
+                    <div class="feature-card" onclick="showPage('violation-manage')">
+                        <div class="feature-icon">⚠️</div>
+                        <h3>添加违规</h3>
+                        <p>记录车辆违规行为</p>
+                    </div>
+                    <div class="feature-card" onclick="showPage('blacklist-manage')">
+                        <div class="feature-icon">🚫</div>
+                        <h3>黑名单管理</h3>
+                        <p>管理禁止入校车辆</p>
+                    </div>
+                    <div class="feature-card" onclick="showPage('reservation-manage')">
+                        <div class="feature-icon">📅</div>
+                        <h3>预约审核</h3>
+                        <p>审核车辆预约申请</p>
+                    </div>
+                    <div class="feature-card" onclick="showPage('appeal-manage')">
+                        <div class="feature-icon">📝</div>
+                        <h3>申诉审核</h3>
+                        <p>处理用户申诉请求</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 车辆管理 -->
+            <div id="vehicle-manage" class="page-content">
+                <div class="form-section">
+                    <h3>车辆管理</h3>
+                    <div class="search-bar">
+                        <input type="text" id="vehicleSearchKeyword" placeholder="搜索车牌号/车主姓名">
+                        <select id="vehicleSearchType">
+                            <option value="">全部类型</option>
+                            <option value="A">A类-注册</option>
+                            <option value="B">B类-预约</option>
+                            <option value="C">C类-摩托车</option>
+                        </select>
+                        <select id="vehicleSearchStatus">
+                            <option value="">全部状态</option>
+                            <option value="normal">正常</option>
+                            <option value="banned">不可注册</option>
+                            <option value="cancelled">已注销</option>
+                            <option value="blacklisted">黑名单</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="searchVehicles()">搜索</button>
+                    </div>
+                    <div id="vehicleManageList"></div>
+                    <div class="pagination" id="vehiclePagination"></div>
+                </div>
+            </div>
+
+            <!-- 违规管理 -->
+            <div id="violation-manage" class="page-content">
+                <div class="form-section">
+                    <h3>添加违规记录</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>车牌号</label>
+                            <input type="text" id="vioPlateNum" placeholder="请输入车牌号">
+                        </div>
+                        <div class="form-group">
+                            <label>违规等级</label>
+                            <select id="vioRank">
+                                <option value="">请选择</option>
+                                <option value="一般">一般违规（扣1分）</option>
+                                <option value="较重">较重违规（扣3分）</option>
+                                <option value="严重">严重违规（扣6分）</option>
+                                <option value="危险">危险违规（扣12分）</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>违规地点</label>
+                            <input type="text" id="vioLocation" placeholder="如：光华校区南门">
+                        </div>
+                        <div class="form-group">
+                            <label>违规时间</label>
+                            <input type="datetime-local" id="vioTime">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>违规描述</label>
+                        <textarea id="vioDescription" placeholder="请输入违规详细描述"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="addViolation()">提交违规</button>
+                        <button class="btn btn-secondary" onclick="batchImportViolations()">批量导入</button>
+                    </div>
+                </div>
+
+                <div class="form-section" style="margin-top: 24px;">
+                    <h3>违规记录列表</h3>
+                    <div class="search-bar">
+                        <input type="text" id="vioSearchPlate" placeholder="搜索车牌号">
+                        <select id="vioSearchRank">
+                            <option value="">全部等级</option>
+                            <option value="一般">一般</option>
+                            <option value="较重">较重</option>
+                            <option value="严重">严重</option>
+                            <option value="危险">危险</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="searchViolations()">搜索</button>
+                    </div>
+                    <div id="violationManageList"></div>
+                    <div class="pagination" id="violationPagination"></div>
+                </div>
+            </div>
+
+            <!-- 预约管理 -->
+            <div id="reservation-manage" class="page-content">
+                <div class="form-section">
+                    <h3>预约审核</h3>
+                    <div class="search-bar">
+                        <select id="reserveSearchStatus">
+                            <option value="pending">待审核</option>
+                            <option value="approved">已通过</option>
+                            <option value="rejected">已拒绝</option>
+                            <option value="">全部</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="searchReservations()">搜索</button>
+                    </div>
+                    <div id="reservationManageList"></div>
+                    <div class="pagination" id="reservationPagination"></div>
+                </div>
+            </div>
+
+            <!-- 黑名单管理 -->
+            <div id="blacklist-manage" class="page-content">
+                <div class="form-section">
+                    <h3>添加黑名单</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>车牌号</label>
+                            <input type="text" id="blacklistPlateNum" placeholder="请输入车牌号">
+                        </div>
+                        <div class="form-group">
+                            <label>禁止类型</label>
+                            <select id="blacklistBanType">
+                                <option value="all">全部禁止</option>
+                                <option value="register">禁止注册</option>
+                                <option value="reserve">禁止预约</option>
+                                <option value="enter">禁止入校</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>原因</label>
+                        <textarea id="blacklistReason" placeholder="如：酒驾、肇事逃逸等"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>禁止天数（-1为永久）</label>
+                            <input type="number" id="blacklistDays" value="-1" min="-1">
+                        </div>
+                        <div class="form-group">
+                            <label>备注</label>
+                            <input type="text" id="blacklistRemark" placeholder="选填">
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-danger" onclick="addBlacklist()">加入黑名单</button>
+                    </div>
+                </div>
+
+                <div class="form-section" style="margin-top: 24px;">
+                    <h3>黑名单列表</h3>
+                    <div id="blacklistManageList"></div>
+                    <div class="pagination" id="blacklistPagination"></div>
+                </div>
+            </div>
+
+            <!-- 申诉审核 -->
+            <div id="appeal-manage" class="page-content">
+                <div class="form-section">
+                    <h3>申诉审核</h3>
+                    <div class="search-bar">
+                        <select id="appealSearchStatus">
+                            <option value="pending">待审核</option>
+                            <option value="approved">已通过</option>
+                            <option value="rejected">已拒绝</option>
+                            <option value="">全部</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="searchAppeals()">搜索</button>
+                    </div>
+                    <div id="appealManageList"></div>
+                    <div class="pagination" id="appealPagination"></div>
+                </div>
+            </div>
+
+            <!-- 积分管理 -->
+            <div id="score-manage" class="page-content">
+                <div class="form-section">
+                    <h3>积分管理</h3>
+                    <div class="search-bar">
+                        <select id="scoreSearchType">
+                            <option value="">全部类型</option>
+                            <option value="A">A类</option>
+                            <option value="B">B类</option>
+                            <option value="C">C类</option>
+                        </select>
+                        <input type="number" id="scoreSearchMin" placeholder="最低扣分">
+                        <button class="btn btn-primary" onclick="searchScores()">搜索</button>
+                    </div>
+                    <div id="scoreManageList"></div>
+                    <div class="pagination" id="scorePagination"></div>
+                </div>
+            </div>
+
+            <!-- 用户管理 -->
+            <div id="user-manage" class="page-content">
+                <div class="form-section">
+                    <h3>用户管理</h3>
+                    <div class="search-bar">
+                        <input type="text" id="userSearchKeyword" placeholder="搜索姓名/手机号">
+                        <select id="userSearchType">
+                            <option value="">全部类型</option>
+                            <option value="student">学生</option>
+                            <option value="teacher">教职工</option>
+                            <option value="tenant">租户</option>
+                            <option value="partner">合作单位</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="searchUsers()">搜索</button>
+                    </div>
+                    <div id="userManageList"></div>
+                    <div class="pagination" id="userPagination"></div>
+                </div>
+            </div>
+
+            <!-- 管理员申请（仅超级管理员） -->
+            <div id="admin-apply" class="page-content">
+                <div class="form-section">
+                    <h3>管理员申请审核</h3>
+                    <div class="search-bar">
+                        <select id="adminApplySearchStatus">
+                            <option value="pending">待审核</option>
+                            <option value="approved">已通过</option>
+                            <option value="rejected">已拒绝</option>
+                            <option value="">全部</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="searchAdminApplies()">搜索</button>
+                    </div>
+                    <div id="adminApplyList"></div>
+                    <div class="pagination" id="adminApplyPagination"></div>
+                </div>
+            </div>
+
+            <!-- 个人中心 -->
+            <div id="profile" class="page-content">
+                <div class="form-section">
+                    <h3>个人中心</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>用户ID</label>
+                            <input type="text" id="profileUserId" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>真实姓名</label>
+                            <input type="text" id="profileUserName" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>手机号</label>
+                            <input type="text" id="profilePhone" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>身份类型</label>
+                            <input type="text" id="profileType" readonly>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="showChangePassword()">修改密码</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 修改密码弹窗 -->
+    <div id="changePasswordModal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>修改密码</h3>
+                <span class="modal-close" onclick="closeChangePassword()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>旧密码</label>
+                    <input type="password" id="oldPassword" placeholder="请输入旧密码">
+                </div>
+                <div class="form-group">
+                    <label>新密码</label>
+                    <input type="password" id="newPassword" placeholder="至少6位字符">
+                </div>
+                <div class="form-group">
+                    <label>确认新密码</label>
+                    <input type="password" id="confirmNewPassword" placeholder="再次输入新密码">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeChangePassword()">取消</button>
+                <button class="btn btn-primary" onclick="submitChangePassword()">确认修改</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/auth-utils.js"></script>
+    <script src="../js/admin-dashboard.js"></script>
+</body>
+</html>
